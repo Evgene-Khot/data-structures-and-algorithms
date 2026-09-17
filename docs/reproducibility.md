@@ -35,6 +35,7 @@ python scripts/check_links.py --external # + внешние ссылки (тре
 
 ```bash
 python scripts/generate_data.py --variant N          # все наборы для варианта N
+python scripts/generate_data.py --variant N --only ops         # операции над стеком и деком (ЛР 2)
 python scripts/generate_data.py --variant N --only logs        # журнал событий (ДЗ 3)
 python scripts/generate_data.py --variant N --only embeddings  # псевдо-эмбеддинги (ДЗ 4)
 ```
