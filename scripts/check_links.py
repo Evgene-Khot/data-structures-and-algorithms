@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Проверка Markdown-ссылок и структуры репозитория ФОС «СиАОД, семестр 1».
+"""Проверка Markdown-ссылок и структуры репозитория ФОС «СиАОД».
 
 Использование:
     python scripts/check_links.py                  # внутренние ссылки, якоря, структура
@@ -15,8 +15,11 @@
   2. Структура: обязательные файлы; пары kim-NN/rubric-NN в модулях M1–M4,
      Cases и Exam; наличие 10 обязательных разделов в каждом КИМ; единая
      10-балльная шкала (10/8/6/4/0-3) в каждой рубрике.
-  3. Согласованность БРС: потолок 100 баллов и порог автомата 70 зафиксированы
-     в README, РПД и Exam; упоминаний «120 балл» нет нигде.
+  3. Согласованность БРС (форма аттестации — экзамен): потолок 100 баллов
+     зафиксирован в README и РПД; шкала экзаменационной оценки 68–100 / 58–67 /
+     47–57 / менее 47 приведена в README, РПД, Exam и методичке по оцениванию;
+     в них же нет «автомата», а во всём репозитории — «зачёта», «зачтено»
+     и «120 балл».
 
 Код выхода: 0 — ошибок нет; 1 — найдены ошибки.
 """
@@ -84,7 +87,32 @@ KIM_SECTIONS = [
 RUBRIC_LEVELS = ["**10**", "**8**", "**6**", "**4**", "**0–3**"]
 
 BRS_100_FILES = ["README.md", "docs/rpd.md"]
-BRS_70_FILES = ["README.md", "docs/rpd.md", "Exam/README.md"]
+
+# Шкала экзаменационной оценки (раздел «Экзамен» ФОС дисциплины).
+GRADE_SCALE_FILES = [
+    "README.md",
+    "docs/rpd.md",
+    "Exam/README.md",
+    "Exam/kim-01-final-test.md",
+    "Exam/rubric-01-final-test.md",
+    "methodical-guidelines/teachers-assessment/README.md",
+]
+GRADE_SCALE = [
+    (re.compile(r"68\s*[–-]\s*100"), "«отлично» 68–100"),
+    (re.compile(r"58\s*[–-]\s*67"), "«хорошо» 58–67"),
+    (re.compile(r"47\s*[–-]\s*57"), "«удовлетворительно» 47–57"),
+    (re.compile(r"менее\s+47", re.IGNORECASE), "«неудовлетворительно» менее 47"),
+]
+
+# Следы прежней формы аттестации (зачёт с автоматом при >70 баллах).
+# «Зачётные единицы» и «автоматический» под запрет не попадают.
+LEGACY_CREDIT_RE = re.compile(
+    r"\b(?:не)?зач[её]т(?:а|у|ом|е)?\b"
+    r"|\b(?:не)?зачтено\b"
+    r"|\bзач[её]тн(?:ый|ого|ому|ым|ом|ая|ой|ую|ое)\s+(?:письменн|тест|работ)",
+    re.IGNORECASE,
+)
+AUTOMAT_RE = re.compile(r"\bавтомат(?:а|ом|у|е)?\b", re.IGNORECASE)
 
 # ---------------------------------------------------------------------------
 
@@ -236,14 +264,25 @@ def check_structure() -> None:
         p = ROOT / f
         if p.is_file() and "100" not in p.read_text(encoding="utf-8"):
             err(f"{f}: не зафиксирован потолок БРС 100 баллов")
-    for f in BRS_70_FILES:
+    for f in GRADE_SCALE_FILES:
         p = ROOT / f
-        if p.is_file() and "70" not in p.read_text(encoding="utf-8"):
-            err(f"{f}: не зафиксирован порог автомата 70 баллов")
+        if not p.is_file():
+            continue
+        text = p.read_text(encoding="utf-8")
+        for pattern, label in GRADE_SCALE:
+            if not pattern.search(text):
+                err(f"{f}: не приведена граница экзаменационной оценки {label}")
+        m = AUTOMAT_RE.search(text)
+        if m:
+            err(f"{f}: встречается «{m.group(0)}» — автомат для экзамена не предусмотрен")
     for md in iter_files("*.md"):
         rel = md.relative_to(ROOT)
-        if re.search(r"120\s*балл", md.read_text(encoding="utf-8")):
+        text = md.read_text(encoding="utf-8")
+        if re.search(r"120\s*балл", text):
             err(f"{rel}: встречается «120 балл» — БРС утверждена на 100 баллов")
+        m = LEGACY_CREDIT_RE.search(text)
+        if m:
+            err(f"{rel}: встречается «{m.group(0)}» — форма аттестации по дисциплине — экзамен")
 
 
 def main() -> int:
