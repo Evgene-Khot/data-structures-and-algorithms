@@ -84,6 +84,14 @@ def array_max(a: list[int]) -> int:
 def count_equal_pairs(a: list[int]) -> int:
     """Число пар (i, j), i < j, таких что a[i] == a[j]. Ожидаемая сложность: TODO."""
     # TODO: реализовать двойным циклом
+    pari=0
+    print(a)
+    for i in range(len(a)-1):
+        for j in range(i,len(a)-1):
+            if a[i]==a[j]:
+                pari+=1
+    print(pari)
+    return pari
     raise NotImplementedError
 
 
