@@ -72,11 +72,10 @@ def array_sum(a: list[int]) -> int:
 def array_max(a: list[int]) -> int:
     """Максимум массива (массив непуст). Ожидаемая сложность: TODO."""
     # TODO: реализовать циклом
-    maximka=0
+    maximka=a[0]
     for i in range(len(a)):
         if maximka<a[i]:
             maximka=a[i]
-    print(maximka)
     return maximka
     raise NotImplementedError
 
@@ -85,12 +84,10 @@ def count_equal_pairs(a: list[int]) -> int:
     """Число пар (i, j), i < j, таких что a[i] == a[j]. Ожидаемая сложность: TODO."""
     # TODO: реализовать двойным циклом
     pari=0
-    print(a)
     for i in range(len(a)-1):
         for j in range(i,len(a)-1):
             if a[i]==a[j]:
                 pari+=1
-    print(pari)
     return pari
     raise NotImplementedError
 
@@ -102,6 +99,17 @@ def binary_pow(x: int, n: int, mod: int | None = None) -> int:
     """
     # TODO: реализовать через квадрирование; при mod применять % mod после
     # каждого умножения
+    binar = 1
+    while n > 0:
+        if n & 1:
+            binar *= x
+            if mod is not None:
+                binar %= mod
+        x *= x
+        if mod is not None:
+            x %= mod
+        n >>= 1
+    return binar
     raise NotImplementedError
 
 
