@@ -77,6 +77,11 @@ def fib_naive(n: int) -> int:
     """
     CALLS["fib_naive"] += 1
     # TODO: F(0)=0, F(1)=1, далее F(n)=F(n-1)+F(n-2)
+    if n < 0:
+        raise ValueError("n должно быть неотрицательным")
+    if n <= 1:
+        return n
+    return fib_naive(n - 1) + fib_naive(n - 2)
     raise NotImplementedError
 
 
