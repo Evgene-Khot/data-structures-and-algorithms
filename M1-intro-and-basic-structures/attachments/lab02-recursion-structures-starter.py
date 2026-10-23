@@ -92,6 +92,15 @@ def fib_memo(n: int, memo: dict[int, int] | None = None) -> int:
     """
     CALLS["fib_memo"] += 1
     # TODO: словарь memo передаётся по рекурсии; повторные подзадачи не пересчитываются
+    if n < 0:
+        raise ValueError("n должно быть неотрицательным")
+    if n <= 1:
+        return n
+    if memo is None:
+        memo = {}
+    if n not in memo:
+        memo[n] = fib_memo(n - 1, memo) + fib_memo(n - 2, memo)
+    return memo[n]
     raise NotImplementedError
 
 
