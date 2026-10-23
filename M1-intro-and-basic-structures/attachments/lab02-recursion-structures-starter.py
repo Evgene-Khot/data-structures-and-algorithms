@@ -115,6 +115,11 @@ def hanoi(n: int, src: str = "A", dst: str = "C", aux: str = "B",
     """
     # TODO: базовое условие n == 0; иначе перенести n-1 на aux, 1 на dst, n-1 на dst
     # (moves передаётся во все рекурсивные вызовы)
+    if n < 0:
+        raise ValueError("n должно быть неотрицательным")
+    if n == 0:
+        return 0
+    return hanoi(n - 1, src, aux, dst) + 1 + hanoi(n - 1, aux, dst, src)
     raise NotImplementedError
 
 
