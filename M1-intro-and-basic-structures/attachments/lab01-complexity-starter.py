@@ -101,14 +101,14 @@ def binary_pow(x: int, n: int, mod: int | None = None) -> int:
     # каждого умножения
     binar = 1
     while n > 0:
-        if n & 1:
+        if n % 2 == 1:
             binar *= x
             if mod is not None:
                 binar %= mod
         x *= x
         if mod is not None:
             x %= mod
-        n >>= 1
+        n //= 2
     return binar
     raise NotImplementedError
 
